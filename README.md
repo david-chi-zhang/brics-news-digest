@@ -1,25 +1,26 @@
 # BRICS News Digest Skill
 
-每日金砖国家及重要经济体新闻摘要技能，使用 World News API 获取实时新闻。
+Daily BRICS+ Economic & Political News Digest skill using World News API.
 
-## 功能特点
+## Features
 
-- 🌍 覆盖 9 个国家：🇺🇸🇯🇵🇧🇷🇷🇺🇮🇳🇨🇳🇿🇦🇪🇬🇧🇩🇦🇪
-- ⏰ 每天早上 8:00 自动执行
-- 📰 收集：宏观经济 + 金融市场 + 政治新闻
-- 🤖 使用 AI 自动生成摘要
-- 💾 自动上传到 IMA DailyNews
+- 🌍 **11 Countries/Regions**: 🇪🇺 Eurozone, 🇺🇸 US, 🇯🇵 Japan, 🇧🇷 Brazil, 🇷🇺 Russia, 🇮🇳 India, 🇨🇳 China, 🇿🇦 South Africa, 🇪🇬 Egypt, 🇧🇩 Bangladesh, 🇦🇪 UAE
+- ⏰ **Daily Execution**: 8:00 AM (Beijing Time)
+- 📰 **Categories**: Macroeconomics + Financial Markets + Politics/Geopolitics
+- 🏠 **Domestic News Only**: Each country's news must be about that country
+- 🇨🇳 **China National Filter**: National-level news only (NO provincial/local)
+- 🌐 **Auto-Translation**: Non-English news translated to English
+- 💾 **IMA Integration**: Auto-upload to IMA DailyNews notebook & knowledge base
+- 💰 **Token Efficient**: ~4,000-5,000 tokens/day (99.5% savings)
 
-## 安装
+## Installation
 
-1. 将此 skill 复制到 OpenClaw skills 目录
-2. 配置环境变量
-3. 设置定时任务
+1. Copy skill to OpenClaw skills directory:
+```bash
+cp SKILL.md ~/.openclaw/skills/brics-news-digest/SKILL.md
+```
 
-## 配置
-
-### 环境变量
-
+2. Configure environment variables:
 ```bash
 export WORLD_NEWS_API_KEY="your_api_key"
 export IMA_OPENAPI_CLIENTID="your_client_id"
@@ -27,22 +28,38 @@ export IMA_OPENAPI_APIKEY="your_api_key"
 export HTTP_PROXY="http://127.0.0.1:7897"
 ```
 
-### 定时任务
+3. Set up cron job for daily execution at 8:00 AM (Beijing Time)
 
-每天早上 8:00 (北京时间) 自动执行。
+## News Filtering
 
-## 使用
+### ✅ Collected
+- Macroeconomics: GDP, inflation, trade, economic policy
+- Financial Markets: stocks, forex, commodities, banking
+- Politics/Geopolitics: elections, diplomacy, government policy
 
-```bash
-# 手动执行
-openclaw run brics-news-digest
-```
+### ❌ Excluded
+- Sports (football, basketball, world cup, etc.)
+- Entertainment (movies, celebrities, awards)
+- Lifestyle (fashion, food, travel)
+- Local/Provincial news (for China: national-level only)
 
-## 输出
+## Output Format
 
-- 英文新闻摘要报告
-- 自动上传到 IMA DailyNews 笔记本和知识库
-- Token 消耗：~3,000-3,500/天 (节省 99.7%)
+- English language (non-English translated)
+- 5 news items per country
+- Sorted by time (newest first)
+- Each item: title, 2-3 sentence summary, source link
+
+## Token Consumption
+
+| Item | Tokens |
+|------|--------|
+| World News API (10 calls) | ~500 |
+| Input content | ~3,000-4,000 |
+| IMA API | ~500 |
+| **Daily Total** | **~4,000-5,000** |
+
+**Savings vs original**: 99.5% ✅
 
 ## License
 
