@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "flomo": {
+      "type": "streamableHttp",
+      "transport": "streamable-http",
+      "url": "https://flomoapp.com/mcp",
+      "headers": {
+        "Authorization": "Bearer fmcp_Fa2f9ejDeqw8WRJLIFqdVDfNqIKbtNN6QjSKYizohig"
+      }
+    }
+  }
+}
