@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from ai_translate import translate_news
 """
 Daily BRICS+ News Digest - 新闻处理脚本 v3 (最终版)
 功能：筛选、AI 翻译、分类、生成报告
@@ -170,25 +171,50 @@ def detect_language(text):
     
     return "other"
 
-def translate_text(text, lang):
-    """翻译文本"""
+def translate_text_with_ai(text, lang):
+    """
+    使用 AI 大模型翻译文本
+    调用 OpenClaw sessions_spawn 或其他 AI 服务
+    """
     if not text or lang == "en":
         return text
     
-    translated = text
-    trans_dict = TRANSLATION_DICT.get(lang, {})
+    # 限制文本长度
+    text_to_translate = text[:200] if len(text) > 200 else text
     
-    # 按长度排序，先翻译长词组
-    sorted_dict = sorted(trans_dict.items(), key=lambda x: len(x[0]), reverse=True)
+    try:
+        # 使用 OpenClaw sessions_spawn 调用 AI 翻译
+        import subprocess
+        import json
+        
+        prompt = f"Translate this {lang} text to English. Return ONLY the translation, no explanations:\n\n{text_to_translate}"
+        
+        # 调用本地 AI 模型（如果有）
+        result = subprocess.run(
+            ['curl', '-s', '-X', 'POST', 'http://localhost:11434/api/generate',
+             '-H', 'Content-Type: application/json',
+             '-d', json.dumps({
+                 "model": "llama3.2",
+                 "prompt": prompt,
+                 "stream": False,
+                 "max_tokens": 300
+             })],
+            capture_output=True, text=True, timeout=30
+        )
+        
+        if result.returncode == 0:
+            response = json.loads(result.stdout)
+            translated = response.get("response", "").strip()
+            if translated and len(translated) > 10:
+                return translated
+    except Exception as e:
+        # AI 翻译失败，降级为简单标记
+        pass
     
-    for original, translation in sorted_dict:
-        translated = translated.replace(original, translation)
-    
-    # 如果翻译后变化不大，添加翻译标记
-    if translated == text:
-        return f"[Translation needed] {text}"
-    
-    return translated
+    # 降级方案：标记语言
+    lang_names = {"pt": "PT", "ru": "RU", "zh": "CN", "ar": "AR", "mr": "IN", "ja": "JP"}
+    lang_name = lang_names.get(lang, lang.upper())
+    return f"[{lang_name}] {text_to_translate}"
 
 def simple_summarize(text, max_length=150):
     """简单摘要：提取前 1-2 个完整句子"""
@@ -235,7 +261,7 @@ def process_news(country_code, news_list):
         # 4. 检测并翻译非英语标题
         lang = detect_language(title)
         if lang != "en":
-            title = translate_text(title, lang)
+            title = translate_news(title, lang)
             stats["translated"] += 1
         
         # 5. 分类
@@ -320,16 +346,73 @@ def generate_report(all_news, stats_total):
     
     return report
 
+def fetch_bangladesh_news():
+    """从 Financial Express Bangladesh 获取新闻"""
+    import subprocess
+    
+    url = "https://thefinancialexpress.com.bd/page/economy/bangladesh"
+    news_list = []
+    
+    try:
+        # 使用 web_fetch 获取页面内容
+        result = subprocess.run(
+            ['web_fetch', url, '--extractMode', 'markdown', '--maxChars', '10000'],
+            capture_output=True, text=True, timeout=30
+        )
+        
+        if result.returncode == 0:
+            content = result.stdout
+            # 解析 Markdown 内容，提取新闻
+            lines = content.split('\n')
+            current_news = {}
+            
+            for line in lines:
+                if line.startswith('## ') or line.startswith('### '):
+                    if current_news:
+                        news_list.append(current_news)
+                    current_news = {
+                        'title': line.lstrip('#').strip(),
+                        'text': '',
+                        'summary': '',
+                        'url': '',
+                        'author': 'Financial Express',
+                        'source': 'The Financial Express Bangladesh'
+                    }
+                elif current_news and line.strip():
+                    current_news['text'] += line + '\n'
+            
+            if current_news:
+                news_list.append(current_news)
+                
+    except Exception as e:
+        print(f"  Failed to fetch Bangladesh news: {e}")
+    
+    return news_list[:5]  # 返回最多 5 条
+
 def main():
     """主函数"""
     all_news = {}
     stats_total = {"total": 0, "translated": 0, "excluded": 0}
     
+    # 特殊处理：孟加拉新闻优先从 Financial Express 获取
+    bd_news_from_fe = fetch_bangladesh_news()
+    if bd_news_from_fe:
+        print(f"✅ Fetched {len(bd_news_from_fe)} Bangladesh news from Financial Express")
+    
     for country_code in COUNTRY_NAMES.keys():
         filepath = f"/tmp/news_collection/{country_code}.json"
         if not os.path.exists(filepath):
-            print(f"⚠️  File not found: {filepath}")
-            continue
+            # 如果是孟加拉且从 Financial Express 获取了新闻，使用这些新闻
+            if country_code == "bd" and bd_news_from_fe:
+                print(f"  Using Financial Express news for Bangladesh")
+                news_list = bd_news_from_fe
+            else:
+                print(f"⚠️  File not found: {filepath}")
+                continue
+        else:
+            with open(filepath, 'r') as f:
+                data = json.load(f)
+            news_list = data.get("news", [])
         
         with open(filepath, 'r') as f:
             data = json.load(f)
