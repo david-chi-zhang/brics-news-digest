@@ -2,18 +2,25 @@
 
 ## 📊 PMI Indicators
 
-### Composite PMI
+**Composite PMI**
 
-**2026-02**. The HCOB Eurozone Composite PMI climbed to 51.9 in February 2026, up from 51.3 in January, marking the strongest expansion in private sector activity in three months. The reading signaled a firmer pace of growth across the euro area economy. Growth was driven by stronger manufacturing and services output, with Germany leading the upturn. Ireland and Italy also posted solid gains, while growth slowed in Spain and France stagnated. New orders increased at a faster pace overall, despite a continued decline in export business.
-
-### Manufacturing PMI
-
-**2026-02**. The HCOB Eurozone Manufacturing PMI was confirmed at 50.8 in February 2026, up from January's 49.5, marking the strongest improvement in operating conditions for euro area factories since June 2022. Manufacturing output rose again, and new orders increased at the fastest pace since April 2022, while exports declined at the slowest rate in three months. Despite the gains, employment continued to fall, and backlog reductions moderated.
-
-### Services PMI
-
-**2026-02**. The HCOB Eurozone Services PMI inched higher to 51.9 in February of 2026 from 51.6 in the previous month, slightly ahead of the preliminary estimate of 51.8 and in line with the initial market expectations. New orders for companies in the sector improved at a faster pace, although strong demand was solely due to favorable domestic dynamics as export orders fell further, extending the streak that began in June of 2023.
+**2026-02**. The HCOB Eurozone Composite PMI climbed to 51.9 in February 2026, up from 51.3 in January, marking the strongest expansion in private sector activity in three months.
 
 ---
-*数据来源：Trading Economics | 更新时间：2026-03-21 11:59*
-*国家：EuroArea | 指标：PMI | 年份：2026*
+
+## 2026-03 更新
+
+**Composite PMI**
+
+**2026-03**. Composite PMI in the Euro Area decreased to 50.70 points in March from 51.90 points in February of 2026. The reading signaled a slower pace of private sector expansion, though the index remained above the 50 threshold that separates growth from contraction.
+
+**Manufacturing PMI**
+
+**2026-03**. The S&P Global Eurozone Manufacturing PMI rose to 51.6 in March 2026, up from both the preliminary estimate of 51.4 and February's 50.8. This marks the strongest expansion in the sector since June 2022, amid a considerable supply-side disruption as the war in the Middle East disrupted global logistics markets. Output growth hit a seven-month high, while new orders matched February's 46-month record, though the increase remained modest. New export orders stabilized, ending an eight-month decline, and backlogs of work expanded—the first sign of capacity pressures since mid-2022. However, employment continued to decline. On pricing, input cost inflation reached its highest level since October 2022, and factory gate prices rose at the fastest pace in over three years. Meanwhile, business confidence weakened in March, weighed down by ongoing Middle East tensions.
+
+**Services PMI**
+
+**2026-03**. The S&P Global Eurozone Services PMI Business Activity Index pointed to only marginal growth in March, easing to 50.2 from 51.9 in February and close to the preliminary 50.1 estimate, marking the weakest performance since May last year. Demand conditions deteriorated, with new business falling for the first time since July 2025 and at the fastest pace in 16 months, while export sales also declined more sharply. Service providers continued to work through backlogs, extending a trend seen since November, and employment levels were broadly unchanged, with hiring activity near a five year low. Business confidence weakened notably, dropping to a ten month low amid rising uncertainty. At the same time, cost pressures intensified, with input price inflation accelerating to a 34 month high, although the pace of increase in prices charged slowed slightly compared to February.
+
+---
+*数据来源：Trading Economics | 更新时间：2026-04-07 16:03*

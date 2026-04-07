@@ -2,18 +2,17 @@
 
 ## 📊 PMI Indicators
 
-### Composite PMI
+**Composite PMI**
 
-**2026-02**. Japan's S&P Global Composite PMI rose to 53.9 in February 2026, slightly higher than the preliminary estimates of 53.8, and picking up from 53.1 in January, marking the fastest expansion in overall private sector activity since May 2023. Growth was supported by a solid gain in services activity alongside a notably quicker rise in manufacturing output. Overall new orders increased at the strongest pace in 33 months, while new export business expanded at the fastest rate in eight years, driven by stronger external demand for manufactured goods.
-
-### Manufacturing PMI
-
-**2026-02**. The S&P Global Japan Manufacturing PMI rose to 53 in February 2026 from 51.5 in January, above the initial estimate of 52.8, as companies signaled a stronger recovery in business conditions, with output, new orders, and employment growth all accelerating since January. This marked the strongest manufacturing expansion since May 2022. Output grew at a solid pace, the fastest in just over four years, with firms often citing rising new business as a key driver. Total new orders also expanded robustly, the fastest since January 2022.
-
-### Services PMI
-
-**2026-02**. Japan's S&P Global Services PMI rose to 53.8 in February 2026, confirming preliminary estimates, and up slightly from January's 53.7, marking the fastest pace since May 2024. Growth was supported by a solid rise in new orders, the most pronounced since April 2024, driven mainly by stronger domestic demand and new client wins. Backlogs of work accumulated at a solid pace, the fastest since June 2023, as firms contended with rising workloads.
+**2026-02**. Japan's S&P Global Composite PMI rose to 53.9 in February 2026, slightly higher than the preliminary estimates of 53.8, and picking up from 53.1 in January, marking the fastest expansion in overall private sector activity since May 2023.
 
 ---
-*数据来源：Trading Economics | 更新时间：2026-03-21 11:58*
-*国家：Japan | 指标：PMI | 年份：2026*
+
+## 2026-03 更新
+
+**Composite PMI**
+
+**2026-03**. Japan's S&P Global Composite PMI Japan edged up to 53.0 in March 2026 from a flash estimate of 52.9, but eased from February's 33-month high of 53.9. The latest reading marked a 12th consecutive month of private sector expansion, though growth slowed to its weakest pace since December. Output growth moderated across both manufacturing and services, while total new orders rose at the softest pace so far this year. New export orders also expanded only modestly, cooling from February's eight-year high. Employment growth softened to a four-month low, reflecting a slower buildup in backlogs of work. On the cost side, input price inflation accelerated to an 11-month high, but firms raised selling prices at a more subdued pace. Meanwhile, business confidence slipped to its lowest level in nearly a year, pointing to a more cautious outlook ahead.
+
+---
+*数据来源：Trading Economics | 更新时间：2026-04-07 15:45*

@@ -1,0 +1,87 @@
+{
+  "country": "Bangladesh",
+  "country_code": "bd",
+  "primary_sources": [
+    {
+      "name": "The Financial Express Bangladesh",
+      "url": "https://thefinancialexpress.com.bd/page/economy/bangladesh",
+      "category": "Economy/Bangladesh",
+      "language": "en",
+      "priority": 1,
+      "description": "Primary source for Bangladesh economic and financial news"
+    },
+    {
+      "name": "The Financial Express - Economy",
+      "url": "https://thefinancialexpress.com.bd/category/economy",
+      "category": "Economy",
+      "language": "en",
+      "priority": 2
+    },
+    {
+      "name": "The Financial Express - Banking",
+      "url": "https://thefinancialexpress.com.bd/category/banking",
+      "category": "Banking/Finance",
+      "language": "en",
+      "priority": 3
+    },
+    {
+      "name": "The Financial Express - Trade",
+      "url": "https://thefinancialexpress.com.bd/category/trade",
+      "category": "Trade/Commerce",
+      "language": "en",
+      "priority": 4
+    }
+  ],
+  "secondary_sources": [
+    {
+      "name": "The Daily Star - Business",
+      "url": "https://www.thedailystar.net/business",
+      "category": "Business/Economy",
+      "language": "en",
+      "priority": 10
+    },
+    {
+      "name": "Dhaka Tribune - Business",
+      "url": "https://www.dhakatribune.com/business",
+      "category": "Business",
+      "language": "en",
+      "priority": 11
+    },
+    {
+      "name": "New Age - Economy",
+      "url": "https://www.newagebd.net/category/economy",
+      "category": "Economy",
+      "language": "en",
+      "priority": 12
+    },
+    {
+      "name": "UNB News",
+      "url": "https://www.unb.com.bd/category/National",
+      "category": "National/Politics",
+      "language": "en",
+      "priority": 13
+    }
+  ],
+  "world_news_api_config": {
+    "source_countries": "bd",
+    "preferred_sources": [
+      "thefinancialexpress.com.bd",
+      "thedailystar.net",
+      "dhakatribune.com",
+      "newagebd.net",
+      "unb.com.bd"
+    ],
+    "exclude_sources": [
+      "perezhilton.com",
+      "tmz.com",
+      "cricbuzz.com",
+      "espncricinfo.com"
+    ]
+  },
+  "keywords": {
+    "economy": ["gdp", "inflation", "export", "import", "remittance", "forex", "reserve", "bank", "interest rate", "fiscal policy"],
+    "finance": ["stock", "market", "share", "bond", "currency", "taka", "bdt", "dkse", "dse", "cse"],
+    "trade": ["trade", "commerce", "garment", "rmg", "textile", "jute", "tea", "shrimp"],
+    "politics": ["election", "parliament", "government", "policy", "minister", "prime minister", "awami league", "bnb"]
+  }
+}
