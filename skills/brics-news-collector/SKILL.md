@@ -88,31 +88,44 @@ def validate_api_response(data):
 
 ### Step 2: 筛选新闻（⚠️ 关键步骤）
 
-**筛选逻辑**: **先筛选，后翻译**（避免翻译无用新闻）
+**筛选逻辑**: **先筛选，后翻译**（但非英语标题需要先翻译）
+
+**问题**: 对于非英语标题（俄语/阿拉伯语/中文等），无法直接判断内容
+
+**解决方案**: **两阶段筛选**
 
 ```python
 def filter_news(news_list, country_code, max_items=5):
     """
-    筛选新闻
+    筛选新闻（两阶段）
     
-    规则:
-    1. 排除体育/娱乐新闻
-    2. 确保与该国相关
-    3. 必须有有效摘要
-    4. 每国最多 5 条
+    阶段 1: 不依赖标题内容的筛选
+    - URL 域名验证
+    - 正文字段验证
+    - API 分类字段
+    
+    阶段 2: 非英语标题先翻译，再筛选
     """
     filtered = []
+    titles_to_translate = []
     
     for item in news_list:
-        # 1. 排除体育/娱乐
-        if should_exclude(item):
+        # 阶段 1: 不依赖标题的筛选
+        
+        # 1. URL 域名验证（最可靠）
+        if not is_relevant_by_url(item, country_code):
             continue
         
-        # 2. 检查相关性
-        if not is_relevant(item, country_code):
+        # 2. 检查 API 分类字段
+        category = item.get("category", "").lower()
+        if category in ["sports", "entertainment", "lifestyle"]:
             continue
         
-        # 3. 确保有摘要
+        # 3. 正文内容验证（即使标题是外语，正文可能包含英语关键词）
+        if not is_relevant_by_text(item, country_code):
+            continue
+        
+        # 4. 确保有摘要
         summary = item.get("summary")
         if not summary or len(summary) < 20:
             text = item.get("text", "")
@@ -121,15 +134,38 @@ def filter_news(news_list, country_code, max_items=5):
         if not summary:
             continue
         
-        # 4. 添加到筛选结果
         item["summary"] = summary
-        filtered.append(item)
         
-        # 5. 达到上限
-        if len(filtered) >= max_items:
+        # 5. 检测标题语言
+        title = item.get("title", "")
+        title_lang = detect_language(title)
+        
+        if title_lang != "en":
+            # 非英语标题，需要先翻译
+            titles_to_translate.append({
+                "index": len(filtered),
+                "title": title,
+                "lang": title_lang
+            })
+        
+        filtered.append(item)
+    
+    # 阶段 2: 翻译非英语标题
+    if titles_to_translate:
+        translations = call_ai_translate(titles_to_translate)
+        for trans in translations:
+            filtered[trans["index"]]["title"] = trans["translated"]
+    
+    # 阶段 3: 翻译后再筛选（排除体育/娱乐）
+    final_filtered = []
+    for item in filtered:
+        if should_exclude_by_title(item):
+            continue
+        final_filtered.append(item)
+        if len(final_filtered) >= max_items:
             break
     
-    return filtered
+    return final_filtered
 ```
 
 **排除规则**:
@@ -138,14 +174,44 @@ EXCLUDE_SPORTS = ["nfl", "nba", "mlb", "nhl", "premier league", "cricket", "ipl"
 EXCLUDE_ENTERTAINMENT = ["celebrity", "movie", "music award", "snl"]
 ```
 
-**相关性检测**:
+**相关性检测（多策略）**:
+
 ```python
+# 策略 1: URL 域名验证（最可靠，不依赖语言）
+URL_COUNTRY_MAP = {
+    "br": [".br", "globo.com", "uol.com.br"],
+    "ru": [".ru", "ria.ru", "tass.ru"],
+    "cn": [".cn", "chinadaily.com.cn", "xinhuanet.com"],
+    "jp": [".jp", "japantimes.co.jp", "asahi.com"],
+    # ... 其他国家
+}
+
+def is_relevant_by_url(news_item, country_code):
+    url = news_item.get("url", "").lower()
+    for domain in URL_COUNTRY_MAP.get(country_code, []):
+        if domain in url:
+            return True
+    return False
+
+# 策略 2: 正文字段验证（即使标题是外语，正文可能包含英语）
 COUNTRY_KEYWORDS = {
     "br": ["brazil", "brasileiro", "brasilia", "sao paulo"],
     "ru": ["russia", "russian", "moscow", "kremlin"],
-    "cn": ["china", "chinese", "beijing", "shanghai", "中国"],
+    "cn": ["china", "chinese", "beijing", "shanghai"],
     # ... 其他国家
 }
+
+def is_relevant_by_text(news_item, country_code):
+    text = (news_item.get("text") or "").lower()
+    for kw in COUNTRY_KEYWORDS.get(country_code, []):
+        if kw in text:
+            return True
+    return False
+
+# 策略 3: API 分类字段
+def is_sports_or_entertainment(news_item):
+    category = (news_item.get("category") or "").lower()
+    return category in ["sports", "entertainment", "lifestyle"]
 ```
 
 **产出**: 每个国家最多 5 条新闻（已筛选，未翻译）
@@ -154,19 +220,22 @@ COUNTRY_KEYWORDS = {
 
 ### Step 3: 翻译新闻
 
-**翻译策略**: **只翻译最终收录的新闻**
+**翻译策略**: **标题和摘要都要翻译**
+
+**流程**:
+1. 筛选阶段已翻译非英语标题（为了筛选）
+2. 现在翻译所有收录新闻的标题和摘要（确保全文英语）
 
 ```python
-def translate_news(news_list):
+def translate_all_news(news_list):
     """
-    翻译新闻
+    翻译所有收录新闻的标题和摘要
     
     流程:
     1. 收集需要翻译的文本（标题 + 摘要）
-    2. 调用 AI 翻译（使用当前对话的大模型能力）
+    2. 批量调用 AI 翻译（使用当前对话的大模型能力）
     3. 应用翻译结果
     """
-    # 1. 收集需要翻译的文本
     texts_to_translate = []
     
     for i, item in enumerate(news_list):
@@ -194,15 +263,23 @@ def translate_news(news_list):
                     "lang": summary_lang
                 })
     
-    # 2. 调用 AI 翻译（使用当前对话的大模型能力）
+    # 调用 AI 翻译（使用当前对话的大模型能力）
     if texts_to_translate:
         translations = call_ai_translate(texts_to_translate)
-        
-        # 3. 应用翻译结果
         news_list = apply_translations(news_list, translations)
     
     return news_list
 ```
+
+**翻译示例**:
+| 原文 | 语言 | 翻译后 |
+|------|------|--------|
+| `Треть россиян не доверяют телемедицине` | 俄语 | `One third of Russians do not trust telemedicine` |
+| `إسرائيل تحتجز 4 من جنودها` | 阿拉伯语 | `Israel detains 4 of its soldiers` |
+| `中国成为"世界 Token 工厂"` | 中文 | `China becomes "world Token factory"` |
+| `きょう予算が成立見込み` | 日语 | `Budget expected to pass today` |
+
+**产出**: 所有新闻标题和摘要均为英语
 
 **语言检测**:
 ```python
@@ -363,13 +440,16 @@ cp daily-brics-news-YYYY-MM-DD.md /home/admin/openclaw/workspace/archive/$(date 
 | 步骤 | 耗时 | 说明 |
 |------|------|------|
 | Step 1: 获取新闻 | 30-60 秒 | 11 国 API 请求 + Financial Express |
-| Step 2: 筛选新闻 | 10-20 秒 | 排除体育/娱乐，确保相关性 |
-| Step 3: 翻译新闻 | 30-60 秒 | 只翻译最终收录的新闻（约 25-55 条） |
+| Step 2: 筛选新闻 | 15-25 秒 | **两阶段筛选**：<br>1. URL/正文验证（不依赖标题）<br>2. 非英语标题先翻译，再筛选 |
+| Step 3: 翻译新闻 | 30-60 秒 | 翻译所有收录新闻的**标题 + 摘要** |
 | Step 4: 生成报告 | 5-10 秒 | Markdown 格式化 |
 | Step 5: IMA 上传 | 5-10 秒 | API 调用 |
-| **总计** | **80-160 秒** | 约 1.5-2.5 分钟 |
+| **总计** | **85-165 秒** | 约 1.5-2.5 分钟 |
 
-**优化点**: 先筛选后翻译，避免翻译被排除的新闻，节省时间和 token。
+**优化点**: 
+- 两阶段筛选：先 URL/正文验证，再翻译标题，避免翻译无关新闻
+- 批量翻译：标题和摘要一起翻译，提高效率
+- 只翻译最终收录的新闻（25-55 条 × 2 = 50-110 个文本块）
 
 ---
 
