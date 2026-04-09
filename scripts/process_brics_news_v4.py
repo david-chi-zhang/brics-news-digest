@@ -81,13 +81,14 @@ def get_news_api():
 def fetch_news_official(api_instance, country_code, from_date, to_date, number=10):
     """使用官方 API 获取新闻
     
-    同时使用 source_country 和 text 参数获取关于该国的新闻
-    - source_country: 来自该国媒体的新闻
-    - text: 新闻内容包含该国名称（获取国际媒体报道）
+    组合使用 entities 和 source_country 参数：
+    - entities="LOC:Country": 关于该国的新闻（语义搜索，全球媒体）
+    - source_country: 来自该国媒体的新闻（本地媒体）
+    - 两者组合：获取最全面的关于该国的新闻报道
     """
     try:
-        # 国家名称（用于 text 搜索）
-        COUNTRY_NAMES_FOR_TEXT = {
+        # 国家名称（用于 entities 参数）
+        COUNTRY_NAMES_FOR_LOCATION = {
             "eu": "European Union",
             "us": "United States",
             "jp": "Japan",
@@ -101,12 +102,12 @@ def fetch_news_official(api_instance, country_code, from_date, to_date, number=1
             "ae": "United Arab Emirates"
         }
         
-        country_name = COUNTRY_NAMES_FOR_TEXT.get(country_code, country_code)
+        location = COUNTRY_NAMES_FOR_LOCATION.get(country_code, country_code)
         
-        # 同时搜索：来自该国媒体 OR 关于该国的新闻
+        # 组合搜索：关于该国 + 来自该国媒体
         response = api_instance.search_news(
+            entities=f"LOC:{location}",  # 关于该国的新闻（语义搜索）
             source_country=country_code,  # 来自该国媒体
-            text=country_name,  # 或新闻内容包含该国名称
             earliest_publish_date=from_date,
             latest_publish_date=to_date,
             number=number
